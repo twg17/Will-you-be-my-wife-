@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Плавные надписи и стикер-сердце с текстом</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      background-image: url('love.jpg');
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;
+      background-attachment: fixed;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      position: relative;
+      color: white;
+      user-select: none;
+    }
+    /* Черный полупрозрачный фон для надписей */
+    .floating-labels-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 20;
+      overflow: visible;
+    }
+    /* Каждая надпись */
+    .floating-label {
+      position: absolute;
+      white-space: nowrap;
+      font-size: 1.2rem;
+      font-weight: 600;
+      opacity: 0;
+      color: #ffccd5;
+      text-shadow:
+        0 0 5px rgba(255, 192, 203, 0.8),
+        0 0 10px rgba(255, 105, 180, 0.8);
+      animation: fadeInOut 4s ease-in-out forwards;
+      user-select: none;
+    }
+    /* Плавное появление и исчезание */
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(10px) scale(0.9); }
+      10% { opacity: 1; transform: translateY(0) scale(1); }
+      90% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-10px) scale(0.8); }
+    }
+    /* Стикер-сердечко по центру, изначально скрыт */
+    .sticker-heart {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 150px;
+      height: 150px;
+      z-index: 30;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1.5s ease, transform 1.5s ease;
+    }
+    /* Активный вид стикера */
+    .sticker-heart.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    /* Подпись под стикером */
+    .heart-caption {
+      position: fixed;
+      top: calc(50% + 90px); /* 90px — чуть ниже центра + примерно высота стикера */
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2rem;
+      font-weight: bold;
+      color: #ff6699;
+      text-shadow: 0 0 8px #ff6699aa;
+      opacity: 0;
+      user-select: none;
+      pointer-events: none;
+      transition: opacity 2s ease;
+      white-space: nowrap;
+      z-index: 31;
+    }
+    /* Появление подписи */
+    .heart-caption.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="floating-labels-container" id="floatingLabels"></div>
+
+  <!-- Стикер-сердечко -->
+  <img src="goma-heart-goma-love.gif" alt="Heart Sticker" class="sticker-heart" id="stickerHeart" />
+
+  <!-- Надпись под стикером -->
+  <div class="heart-caption" id="heartCaption">я тебя люблю</div>
+
+  <script>
+    const texts = [
+      "я тебя люблю❤️",
+      "солнышко❤️",
+      "лапочка❤️",
+      "любимая❤️",
+      "зайка❤️",
+      "милашка❤️",
+      "пушистик❤️",
+      "сладкая❤️",
+      "золотко❤️",
+      "котёнок❤️",
+      "дорогая❤️",
+      "чудо моё❤️",
+      "радость моя❤️",
+      "ангелочек❤️",
+      "нежная моя❤️",
+      "малышочка❤️",
+      "тигрёнок❤️",
+      "принцесса❤️",
+      "голубка❤️",
+      "счастье моё❤️",
+      "королева❤️",
+      "ненаглядная❤️",
+      "хорошая моя❤️",
+      "зая❤️",
+      "ласточка❤️",
+      "мышонок❤️",
+      "пупсик❤️",
+      "малышка❤️",
+      "песенка моя❤️",
+      "красавица❤️",
+      "ромашка❤️",
+      "звёздочка❤️",
+      "мечта моя❤️",
+      "жемчужинка❤️"
+    ];
+
+    const container = document.getElementById('floatingLabels');
+    const sticker = document.getElementById('stickerHeart');
+    const caption = document.getElementById('heartCaption');
+
+    const labelDuration = 4000;  // Время анимации каждой надписи (мс)
+    const totalDuration = 20000; // Общее время анимации (мс)
+
+    function createFloatingLabel(text) {
+      const label = document.createElement('div');
+      label.className = 'floating-label';
+      label.textContent = text;
+
+      label.style.left = (Math.random() * 80 + 10) + "vw";
+      label.style.top = (Math.random() * 80 + 10) + "vh";
+
+      label.style.fontSize = (1 + Math.random() * 0.5) + "rem";
+
+      container.appendChild(label);
+
+      setTimeout(() => label.remove(), labelDuration);
+    }
+
+    function showStickerHeart() {
+      sticker.classList.add('show');
+      // Плавно показать подпись сразу после показа гифки
+      setTimeout(() => {
+        caption.classList.add('show');
+      }, 500);
+    }
+
+    function startFloatingLabels() {
+      const intervalStep = 800;
+      let elapsed = 0;
+      const intervalId = setInterval(() => {
+        const idx = Math.floor(Math.random() * texts.length);
+        createFloatingLabel(texts[idx]);
+        elapsed += intervalStep;
+
+        if (elapsed >= totalDuration) {
+          clearInterval(intervalId);
+          setTimeout(showStickerHeart, 1000);
+        }
+      }, intervalStep);
+    }
+
+    window.addEventListener('load', () => {
+      startFloatingLabels();
+    });
+  </script>
+
+</body>
+</html>

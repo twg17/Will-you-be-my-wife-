@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Опросик</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      background-image: url('love.jpg');
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;
+      background-attachment: fixed;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: #fff;
+      user-select: none;
+      position: relative;
+    }
+    body {
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+    }
+    .container {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 30px 40px;
+      border-radius: 20px;
+      max-width: 600px;
+      width: 90%;
+      box-sizing: border-box;
+      position: relative;
+      z-index: 10; /* Поверх анимации сердечек */
+    }
+    h1 {
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      user-select: none;
+    }
+    /* Скрытие стандартных чекбоксов */
+    input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+    /* Стилизация меток с расположением сердечек справа */
+    label {
+      position: relative;
+      padding-right: 40px; /* место для сердечка */
+      cursor: pointer;
+      font-size: 1.1rem;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding-left: 12px;
+      transition: background 0.3s;
+    }
+    label:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    /* Псевдоэлемент - пустое сердечко справа */
+    label::before {
+      content: "";
+      position: absolute;
+      right: 12px;
+      width: 24px;
+      height: 24px;
+      background: transparent;
+      border: 2px solid #fff;
+      border-radius: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      clip-path: polygon(
+        50% 90%,
+        15% 60%,
+        0% 35%,
+        15% 10%,
+        40% 10%,
+        50% 25%,
+        60% 10%,
+        85% 10%,
+        100% 35%,
+        85% 60%
+      );
+      box-sizing: border-box;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    /* При checked — закрашивается красным */
+    input[type="checkbox"]:checked + label::before {
+      background-color: #f44336;
+      border-color: #f44336;
+    }
+    .status {
+      margin-top: 25px;
+      font-size: 1rem;
+      text-align: center;
+      min-height: 24px;
+    }
+    button {
+      margin-top: 25px;
+      width: 100%;
+      padding: 14px 0;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 15px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      user-select: none;
+    }
+    button:disabled {
+      background-color: #777;
+      cursor: not-allowed;
+    }
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px 25px;
+      }
+      label {
+        font-size: 1rem;
+      }
+      button {
+        font-size: 1rem;
+        padding: 12px 0;
+      }
+    }
+
+    /* Контейнер для плавающих сердечек */
+    .heart-container {
+      pointer-events: none;  /* сердечки не мешают кликам */
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1; /* Под контейнером опроса */
+      overflow: visible;
+    }
+
+    /* Стиль одиночного сердца */
+    .heart {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      opacity: 0.6;
+      background: red;
+      transform: rotate(-45deg);
+      filter: drop-shadow(0 0 2px rgba(255,0,0,0.7));
+      animation: floatUp linear forwards;
+      border-radius: 0;
+    }
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background: red;
+      border-radius: 50%;
+    }
+    .heart::before {
+      top: -15px;
+      left: 0;
+    }
+    .heart::after {
+      left: 15px;
+      top: 0;
+    }
+
+    /* Анимация - сердечки поднимаются и затухают */
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) rotate(-45deg);
+        opacity: 0.6;
+      }
+      100% {
+        transform: translateY(-150px) rotate(-45deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Контейнер для плавающих сердечек -->
+  <div class="heart-container"></div>
+
+  <div class="container">
+    <h1>Вопросы</h1>
+    <form id="questionsForm">
+      <div>
+        <input type="checkbox" id="q1" name="q1" />
+        <label for="q1">Ты чувствуешь, что наши отношения становятся серьёзнее?</label>
+      </div>
+      <div>
+        <input type="checkbox" id="q2" name="q2" />
+        <label for="q2">Ты представляешь нас вместе в будущем?</label>
+      </div>
+      <div>
+        <input type="checkbox" id="q3" name="q3" />
+        <label for="q3">Для тебя наши отношения важны?</label>
+      </div>
+      <div>
+        <input type="checkbox" id="q4" name="q4" />
+        <label for="q4">Ты хочешь, чтобы мы были ближе друг к другу?</label>
+      </div>
+      <div>
+        <input type="checkbox" id="q5" name="q5" />
+        <label for="q5">Ты готова сделать следующий шаг в наших отношениях?</label>
+      </div>
+
+      <div class="status" id="statusText">Выбрано: 0 из 5</div>
+
+      <button type="submit" id="submitBtn" disabled>Согласна</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('questionsForm');
+    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+    const statusText = document.getElementById('statusText');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function updateStatus() {
+      let checkedCount = 0;
+      checkboxes.forEach(chk => {
+        if (chk.checked) checkedCount++;
+      });
+      statusText.textContent = `Выбрано: ${checkedCount} из ${checkboxes.length}`;
+      submitBtn.disabled = (checkedCount !== checkboxes.length);
+    }
+
+    checkboxes.forEach(chk => {
+      chk.addEventListener('change', updateStatus);
+    });
+
+    updateStatus();
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      if (submitBtn.disabled) return;
+      window.location.href = 'next.html'; // замените путь на нужный файл
+    });
+
+    // --- Анимация плавающих сердечек ---
+    const heartContainer = document.querySelector('.heart-container');
+
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+
+      // Размер от 15 до 40 пикселей
+      const size = 15 + Math.random() * 25;
+      heart.style.width = size + 'px';
+      heart.style.height = size + 'px';
+
+      // Случайная позиция по горизонтали в vw
+      heart.style.left = (Math.random() * 100) + 'vw';
+
+      // Начинаем снизу
+      heart.style.bottom = '-40px';
+
+      // Длительность анимации 3-6 секунд
+      heart.style.animationDuration = (3 + Math.random() * 3) + 's';
+
+      // Прозрачность 0.3 — 0.8
+      heart.style.opacity = (0.3 + Math.random() * 0.5).toFixed(2);
+
+      heartContainer.appendChild(heart);
+
+      // Удаляем после анимации
+      heart.addEventListener('animationend', () => heart.remove());
+    }
+
+    function startHearts() {
+      // Несколько сразу при загрузке
+      for(let i = 0; i < 5; i++) {
+        setTimeout(createHeart, i * 300);
+      }
+      // И периодически
+      setInterval(createHeart, 500);
+    }
+
+    startHearts();
+  </script>
+
+</body>
+</html>

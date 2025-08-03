@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>I'm you love</title>
+  <style>
+    /* Общие стили и фон */
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: url('love.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: white;
+      text-align: center;
+      user-select: none;
+      position: relative;
+    }
+
+    /* GIF стикер */
+    .sticker {
+      width: 300px;
+      max-width: 80vw;
+      border-radius: 15px;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .sticker img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Надпись */
+    .caption {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1.3rem;
+      text-shadow: 0 0 5px #000;
+      pointer-events: none;
+    }
+
+    /* Кнопки с отступом */
+    .buttons {
+      margin-top: 30px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      width: 100%;
+      max-width: 400px;
+    }
+    button {
+      flex: 1;
+      padding: 12px 24px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      user-select: none;
+      position: relative;
+      color: white;
+    }
+    button#yes {
+      background-color: #4CAF50;
+    }
+    button#yes:hover {
+      background-color: #388E3C;
+    }
+    button#no {
+      background-color: #f44336;
+    }
+    button#no:hover {
+      background-color: #d32f2f;
+    }
+
+    /* Контейнер для анимированных сердечек */
+    .heart-container {
+      pointer-events: none; /* Сердечки не мешают кликам */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 10;
+      overflow: visible;
+    }
+
+    /* Стиль сердечек */
+    .heart {
+      position: absolute;
+      background: red;
+      width: 30px;
+      height: 30px;
+      opacity: 0.6;
+      transform: rotate(-45deg);
+      filter: drop-shadow(0 0 2px rgba(255,0,0,0.7));
+      animation: floatUp linear forwards;
+      border-radius: 0;
+    }
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      background: red;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+    }
+    .heart::before {
+      top: -15px;
+      left: 0;
+    }
+    .heart::after {
+      top: 0;
+      left: 15px;
+    }
+
+    /* Анимация сердечек: поднимаются вверх и исчезают */
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) rotate(-45deg);
+        opacity: 0.6;
+      }
+      100% {
+        transform: translateY(-150px) rotate(-45deg);
+        opacity: 0;
+      }
+    }
+
+    /* Адаптив */
+    @media (max-width: 400px) {
+      .caption {
+        font-size: 1rem;
+      }
+      button {
+        padding: 10px 18px;
+        font-size: 1rem;
+      }
+      .sticker {
+        width: 80vw;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Контейнер для сердечек -->
+  <div class="heart-container"></div>
+
+  <div class="sticker">
+    <img src="shy-cute.gif" alt="Shy Cute GIF" />
+  </div>
+
+  <div class="caption">Будешь моей женой? 👉👈</div>
+
+  <div class="buttons">
+    <button id="yes">Да</button>
+    <button id="no">Нет</button>
+  </div>
+
+  <script>
+    const btnNo = document.getElementById('no');
+    const btnYes = document.getElementById('yes');
+    const heartContainer = document.querySelector('.heart-container');
+
+    btnNo.addEventListener('click', () => {
+      if (btnNo.style.position !== 'fixed') {
+        btnNo.style.position = 'fixed';
+      }
+      const btnWidth = btnNo.offsetWidth;
+      const btnHeight = btnNo.offsetHeight;
+      const maxX = window.innerWidth - btnWidth - 10;
+      const maxY = window.innerHeight - btnHeight - 10;
+      const randX = Math.floor(Math.random() * maxX);
+      const randY = Math.floor(Math.random() * maxY);
+      btnNo.style.left = randX + 'px';
+      btnNo.style.top = randY + 'px';
+    });
+
+    btnYes.addEventListener('click', () => {
+      window.location.href = 'nextpage.html';
+    });
+
+    // Создаёт и анимирует одно сердечко
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+
+      // Случайный размер (15-40px)
+      const size = 15 + Math.random() * 25;
+      heart.style.width = size + 'px';
+      heart.style.height = size + 'px';
+
+      // Позиция по ширине в vw
+      heart.style.left = (Math.random() * 100) + 'vw';
+
+      // Начинаем анимацию снизу
+      heart.style.bottom = '-40px';
+
+      // Случайная длительность анимации (3-6 сек)
+      heart.style.animationDuration = (3 + Math.random() * 3) + 's';
+
+      // Случайная прозрачность (0.3-0.8)
+      heart.style.opacity = (0.3 + Math.random() * 0.5).toFixed(2);
+
+      heartContainer.appendChild(heart);
+
+      // Удаляем элемент после завершения анимации, чтобы не засорять DOM
+      heart.addEventListener('animationend', () => heart.remove());
+    }
+
+    // Интервал для создания сердечек с небольшим стартовым буфером
+    function startHearts() {
+      for(let i = 0; i < 5; i++) {
+        setTimeout(createHeart, i * 300);
+      }
+      setInterval(createHeart, 500);
+    }
+
+    startHearts();
+  </script>
+  
+</body>
+</html>
